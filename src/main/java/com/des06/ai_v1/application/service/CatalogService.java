@@ -12,6 +12,7 @@ import java.util.UUID;
 import static com.des06.ai_v1.application.exception.BusinessException.Kind.CONFLICT;
 import static com.des06.ai_v1.application.exception.BusinessException.Kind.NOT_FOUND;
 
+
 public class CatalogService implements CatalogUseCase {
 
     private final BookRepository books;

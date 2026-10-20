@@ -7,10 +7,12 @@ spring:
   application:
     name: leitura-ai
 
+
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://root:localpass@localhost:27017/leitura_db?authSource=admin}
+
   data:
-    mongodb:
-      uri: ${MONGODB_URI:mongodb://root:localpass@localhost:27017/leitura_db?authSource=admin}
-      auto-index-creation: true
+    auto-index-creation: true
 
   http:
     client:
