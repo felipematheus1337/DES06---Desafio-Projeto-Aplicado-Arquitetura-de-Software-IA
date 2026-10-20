@@ -3,7 +3,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import com.des06.ai_v1.application.mongo.BookDocument;
 import com.des06.ai_v1.application.port.out.BookRepository;
 import com.des06.ai_v1.domain.model.Book;
 import org.springframework.data.domain.Sort;
