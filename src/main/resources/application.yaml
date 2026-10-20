@@ -1,3 +1,45 @@
+
+server:
+  address: 127.0.0.1
+  port: 8080
+
 spring:
   application:
-    name: ai-v1
+    name: leitura-ai
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://root:localpass@localhost:27017/leitura_db?authSource=admin}
+      auto-index-creation: true
+
+  http:
+    client:
+      connect-timeout: 5s
+      read-timeout: 45s
+
+  ai:
+    chat:
+      client:
+        enabled: false
+
+    model:
+      chat: none
+      embedding: none
+      image: none
+      moderation: none
+      audio:
+        speech: none
+        transcription: none
+
+    retry:
+      max-attempts: 1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+  endpoint:
+    health:
+      show-details: never

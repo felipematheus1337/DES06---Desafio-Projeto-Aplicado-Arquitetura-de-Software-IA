@@ -1,0 +1,32 @@
+
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: leitura-mongodb
+    ports:
+      - "127.0.0.1:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: localpass
+    volumes:
+      - leitura_mongo_data:/data/db
+    healthcheck:
+      test:
+        - CMD
+        - mongosh
+        - --quiet
+        - --username
+        - root
+        - --password
+        - localpass
+        - --authenticationDatabase
+        - admin
+        - --eval
+        - "db.adminCommand('ping').ok"
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
+
+volumes:
+  leitura_mongo_data:
