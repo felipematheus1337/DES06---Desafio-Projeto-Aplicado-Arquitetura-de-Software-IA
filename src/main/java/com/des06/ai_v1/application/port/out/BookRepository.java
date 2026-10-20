@@ -1,6 +1,6 @@
 package com.des06.ai_v1.application.port.out;
 
-import com.des06.ai_v1.application.model.Book;
+import com.des06.ai_v1.domain.model.Book;
 
 import java.util.List;
 import java.util.Optional;

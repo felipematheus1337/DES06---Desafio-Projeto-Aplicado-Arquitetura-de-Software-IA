@@ -1,7 +1,7 @@
 package com.des06.ai_v1.application.service;
 
 import com.des06.ai_v1.application.exception.BusinessException;
-import com.des06.ai_v1.application.model.Book;
+import com.des06.ai_v1.domain.model.Book;
 import com.des06.ai_v1.application.port.in.CatalogUseCase;
 import com.des06.ai_v1.application.port.out.BookRepository;
 

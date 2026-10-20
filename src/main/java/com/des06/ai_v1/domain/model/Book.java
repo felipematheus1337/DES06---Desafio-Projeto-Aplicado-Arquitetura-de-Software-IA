@@ -1,4 +1,4 @@
-package com.des06.ai_v1.application.model;
+package com.des06.ai_v1.domain.model;
 
 import java.util.Locale;
 import java.util.Set;
