@@ -1,0 +1,16 @@
+spring:
+  ai:
+    chat:
+      client:
+        enabled: true
+
+    model:
+     chat: openai
+
+  openai:
+    api-key: ${OPENAI_API_KEY}
+    chat:
+     options:
+      model: ${OPENAI_MODEL:gpt-6-luna}
+      max-completion-tokens: 1200
+      reasoning-effort: none

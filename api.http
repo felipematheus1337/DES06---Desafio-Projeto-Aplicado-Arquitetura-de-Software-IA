@@ -1,0 +1,88 @@
+@baseUrl = http://localhost:8080
+@bookId = e8dbf462-a1c9-4460-af93-007173e6ecbf
+@readerId = fe6edef5-7820-4c5d-b579-2ebb4021776b
+
+### 1. Criar livro
+POST {{baseUrl}}/api/books
+Content-Type: application/json
+
+{
+  "isbn": "9780306406157",
+  "title": "Livro de demonstracao A",
+  "author": "Autor de teste",
+  "topics": ["filosofia", "ciencia"]
+}
+
+### 2. Listar livros ativos
+GET {{baseUrl}}/api/books
+
+### 3. Consultar livro pelo ID
+GET {{baseUrl}}/api/books/{{bookId}}
+
+### 4. Atualizar livro
+PUT {{baseUrl}}/api/books/{{bookId}}
+Content-Type: application/json
+
+{
+  "isbn": "9780306406157",
+  "title": "Livro de demonstracao A - revisado",
+  "author": "Autor de teste",
+  "topics": ["filosofia", "ciencia"]
+}
+
+### 5. Cadastrar leitor
+POST {{baseUrl}}/api/readers
+Content-Type: application/json
+
+{
+  "name": "Leitor de teste",
+  "email": "leitor@example.com"
+}
+
+### 6. Registrar compra/vínculo
+POST {{baseUrl}}/api/purchases
+Content-Type: application/json
+
+{
+  "readerId": "{{readerId}}",
+  "bookId": "{{bookId}}"
+}
+
+### 7. Explicar trecho sintético
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{readerId}}",
+  "bookId": "{{bookId}}",
+  "task": "EXPLAIN",
+  "question": "Explique a ideia e dê um exemplo.",
+  "excerpt": "Uma afirmação precisa ser acompanhada de justificativa."
+}
+
+### 8. Recomendar obras do catálogo
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{readerId}}",
+  "bookId": "{{bookId}}",
+  "task": "RECOMMEND",
+  "topic": "filosofia"
+}
+
+### 9. Criar plano breve
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{readerId}}",
+  "bookId": "{{bookId}}",
+  "task": "PLAN",
+  "topic": "filosofia",
+  "weeks": 4,
+  "minutesPerDay": 30
+}
+
+### 10. Desativar livro — execute somente ao final dos testes
+DELETE {{baseUrl}}/api/books/{{bookId}}
