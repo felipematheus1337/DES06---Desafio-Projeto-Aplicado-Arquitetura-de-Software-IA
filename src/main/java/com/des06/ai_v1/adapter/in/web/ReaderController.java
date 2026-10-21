@@ -1,6 +1,9 @@
 package com.des06.ai_v1.adapter.in.web;
 
+import com.des06.ai_v1.adapter.in.web.request.ReaderRequest;
+import com.des06.ai_v1.adapter.in.web.response.ReaderResponse;
 import com.des06.ai_v1.application.port.in.ReaderUseCase;
+import com.des06.ai_v1.domain.model.Reader;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.net.URI;
