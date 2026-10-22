@@ -7,12 +7,10 @@ spring:
   application:
     name: leitura-ai
 
-
-  mongodb:
-    uri: ${MONGODB_URI:mongodb://root:localpass@localhost:27017/leitura_db?authSource=admin}
-
   data:
-    auto-index-creation: true
+   mongodb:
+     auto-index-creation: true
+
 
   http:
     client:
@@ -35,6 +33,9 @@ spring:
 
     retry:
       max-attempts: 1
+
+  mongodb:
+    uri: ${MONGODB_URI:mongodb://root:localpass@localhost:27017/leitura_db?authSource=admin}
 
 management:
   endpoints:

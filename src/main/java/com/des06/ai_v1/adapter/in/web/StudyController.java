@@ -20,7 +20,7 @@ public class StudyController {
     public StudyController(StudyUseCase study) { this.study = study; }
 
     @PostMapping
-    public StudyResponse answer(@Valid @RequestBody StudyRequest r) {
+    public StudyResponse answer(@RequestBody StudyRequest r) {
         StudyResult s = study.execute(new StudyCommand(r.readerId(), r.bookId(),
                 r.task(), r.question(), r.excerpt(), r.topic(),
                 r.weeks(), r.minutesPerDay()));

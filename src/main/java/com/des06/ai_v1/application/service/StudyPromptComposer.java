@@ -45,9 +45,20 @@ public final class StudyPromptComposer {
                 .append(" | autor: ").append(base.author());
         data.append("\nPERGUNTA\n").append(value(c.question()));
         data.append("\nTRECHO DO LEITOR\n").append(value(c.excerpt()));
-        data.append("\nASSUNTO\n").append(value(c.topic()));
-        data.append("\nSEMANAS: ").append(c.weeks());
-        data.append("\nMINUTOS POR DIA: ").append(c.minutesPerDay());
+
+        if(c.topic() != null) {
+            data.append("\nASSUNTO\n").append(value(c.topic()));
+        }
+
+
+        if(c.weeks() != null) {
+            data.append("\nSEMANAS: ").append(c.weeks());
+        }
+
+        if(c.minutesPerDay() != null) {
+            data.append("\nMINUTOS POR DIA: ").append(c.minutesPerDay());
+        }
+
         data.append("\nCATALOGO\n");
         for (Book b : candidates) {
             data.append("id=").append(b.id()).append(" | titulo=")
