@@ -5,6 +5,8 @@ server:
 
 spring:
   application:
+  profiles:
+    active: local
     name: leitura-ai
 
   data:
@@ -46,3 +48,13 @@ management:
   endpoint:
     health:
       show-details: never
+
+leitura:
+  ai:
+    local:
+      base-url: http://localhost:11434
+      model: ${OLLAMA_MODEL:llama3.2:3b}
+      context-tokens: 8192
+      max-output-tokens: 768
+      max-prompt-utf8-bytes: 6500
+      read-timeouts-seconds: 180

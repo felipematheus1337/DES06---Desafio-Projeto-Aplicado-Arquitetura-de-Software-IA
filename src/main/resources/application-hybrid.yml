@@ -1,0 +1,21 @@
+spring:
+  ai:
+    model:
+      chat: none
+    chat:
+      client:
+        enabled: false
+
+leitura:
+  ai:
+    hybrid:
+      api-key: ${OPENAI_API_KEY}
+      base-url: https://api.openai.com
+      model: ${OPENAI_MODEL:gpt-6-luna}
+      max-output-tokens: 1200
+      reasoning-effort: none
+      input-usd-per-million: ${OPENAI_INPUT_USD_PER_MILLION:0.10}
+      output-usd-per-million: ${OPENAI_OUTPUT_USD_PER_MILLION:0.50}
+      budget-id: ${AI_BUDGET_ID:leitura-demo-v1}
+      limit-usd: ${AI_BUDGET_USD:0.01}
+      use-fraction: 0.90

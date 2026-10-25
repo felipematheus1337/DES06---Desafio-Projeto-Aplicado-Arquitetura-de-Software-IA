@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import static com.des06.ai_v1.application.exception.BusinessException.Kind.UNAVAILABLE;
 
 @Component
-@Profile("!openai")
+@Profile("!openai & !local & !hybrid")
 public class DisabledStudyAssistant implements StudyAssistant {
 
     @Override
     public Reply generate(Request request) {
         throw new BusinessException(UNAVAILABLE,
-                "IA desativada. Ative o perfil openai para esta funcionalidade.");
+                "IA desativada. Ative local, hybrid ou openai.");
     }
 }

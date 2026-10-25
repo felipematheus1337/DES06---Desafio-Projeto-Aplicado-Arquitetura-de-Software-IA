@@ -1,0 +1,43 @@
+@baseUrl = http://localhost:8080
+@bookId = e8dbf462-a1c9-4460-af93-007173e6ecbf
+@readerId = fe6edef5-7820-4c5d-b579-2ebb4021776b
+
+
+### EXPLAIN - Explicar um trecho
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{readerId}}",
+  "bookId": "{{bookId}}",
+  "task": "EXPLAIN",
+  "excerpt": "Conhecer exige examinar as razões que sustentam uma afirmação.",
+  "question": "Explique em português simples e dê um exemplo."
+}
+
+### RECOMMEND - Recomendar livros
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{readerId}}",
+  "bookId": "{{bookId}}",
+  "task": "RECOMMEND",
+  "topic": "filosofia"
+}
+
+### PLAN - Criar um plano de estudos
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{readerId}}",
+  "bookId": "{{bookId}}",
+  "task": "PLAN",
+  "topic": "filosofia",
+  "weeks": 4,
+  "minutesPerDay": 30
+}
+
+### Consultar orçamento de IA
+GET {{baseUrl}}/api/ai/budget
