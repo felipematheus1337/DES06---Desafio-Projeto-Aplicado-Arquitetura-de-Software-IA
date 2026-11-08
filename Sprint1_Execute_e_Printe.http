@@ -1,0 +1,193 @@
+@baseUrl = http://localhost:8080
+
+### PRINT 01 - Aplicacao funcionando - esperado: 200 e status UP
+GET {{baseUrl}}/actuator/health
+
+> {%
+  ["s1s_livro", "s1s_leitor", "s1s_compra", "s1s_isbn", "s1s_email"].forEach(function (nome) {
+    client.global.clear(nome);
+  });
+  client.test("PRINT 01: aplicacao disponivel", function () {
+    client.assert(response.status === 200, "Esperado 200. Envie o print se a aplicacao nao estiver disponivel.");
+    client.assert(response.body.status === "UP", "Esperado status UP.");
+  });
+  if (response.status === 200 && response.body.status === "UP") {
+    var rodada = String(Date.now());
+    var base = "978" + rodada.slice(-9);
+    var soma = 0;
+    for (var i = 0; i < 12; i++) soma += Number(base.charAt(i)) * (i % 2 === 0 ? 1 : 3);
+    client.global.set("s1s_isbn", base + String((10 - soma % 10) % 10));
+    client.global.set("s1s_email", "sprint1." + rodada + "@example.com");
+  }
+%}
+
+### PRINT 02 - Cadastrar um livro - esperado: 201 e um id na resposta
+POST {{baseUrl}}/api/books
+Content-Type: application/json
+
+{
+  "isbn": "{{s1s_isbn}}",
+  "title": "Livro de teste da Sprint 1",
+  "author": "Autor de teste",
+  "topics": ["filosofia", "ciencia"]
+}
+
+> {%
+  client.test("PRINT 02: livro cadastrado", function () {
+    client.assert(response.status === 201, "Esperado 201.");
+    client.assert(response.body.id, "O livro deve retornar um id.");
+  });
+  if (response.status === 201 && response.body.id) client.global.set("s1s_livro", response.body.id);
+%}
+
+### PRINT 03 - Alterar o titulo do livro - esperado: 200 com o titulo atualizado
+PUT {{baseUrl}}/api/books/{{s1s_livro}}
+Content-Type: application/json
+
+{
+  "isbn": "{{s1s_isbn}}",
+  "title": "Livro da Sprint 1 - ATUALIZADO",
+  "author": "Autor de teste",
+  "topics": ["filosofia", "ciencia"]
+}
+
+> {%
+  client.test("PRINT 03: livro atualizado", function () {
+    client.assert(response.status === 200, "Esperado 200.");
+    client.assert(response.body.title === "Livro da Sprint 1 - ATUALIZADO", "Confira o titulo retornado.");
+  });
+%}
+
+### PRINT 04 - Cadastrar um leitor - esperado: 201 e um id na resposta
+POST {{baseUrl}}/api/readers
+Content-Type: application/json
+
+{
+  "name": "Leitor de teste da Sprint 1",
+  "email": "{{s1s_email}}"
+}
+
+> {%
+  client.test("PRINT 04: leitor cadastrado", function () {
+    client.assert(response.status === 201, "Esperado 201.");
+    client.assert(response.body.id, "O leitor deve retornar um id.");
+  });
+  if (response.status === 201 && response.body.id) client.global.set("s1s_leitor", response.body.id);
+%}
+
+### PRINT 05 - Tentar estudar SEM compra - esperado: 403, Livro nao adquirido pelo leitor
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{s1s_leitor}}",
+  "bookId": "{{s1s_livro}}",
+  "task": "EXPLAIN",
+  "question": "Explique em linguagem simples.",
+  "excerpt": "Uma afirmacao precisa de razoes que a sustentem."
+}
+
+> {%
+  client.test("PRINT 05: acesso bloqueado sem compra", function () {
+    client.assert(response.status === 403, "Aqui o esperado e 403: o leitor ainda nao comprou este livro.");
+    client.assert(response.body.detail === "Livro nao adquirido pelo leitor.", "Confira o motivo do bloqueio.");
+  });
+%}
+
+### PRINT 06 - Registrar a compra do livro - esperado: 201
+POST {{baseUrl}}/api/purchases
+Content-Type: application/json
+
+{
+  "readerId": "{{s1s_leitor}}",
+  "bookId": "{{s1s_livro}}"
+}
+
+> {%
+  client.test("PRINT 06: compra registrada", function () {
+    client.assert(response.status === 201, "Esperado 201.");
+    client.assert(response.body.readerId === client.global.get("s1s_leitor"), "Confira o leitor.");
+    client.assert(response.body.bookId === client.global.get("s1s_livro"), "Confira o livro.");
+  });
+  if (response.status === 201 && response.body.id) client.global.set("s1s_compra", response.body.id);
+%}
+
+### PRINT 07 - Tentar estudar COM compra - esperado: 200 com answer e provider OLLAMA
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{s1s_leitor}}",
+  "bookId": "{{s1s_livro}}",
+  "task": "EXPLAIN",
+  "question": "Explique em linguagem simples.",
+  "excerpt": "Uma afirmacao precisa de razoes que a sustentem."
+}
+
+> {%
+  client.test("PRINT 07: acesso permitido depois da compra", function () {
+    client.assert(response.status === 200, "Esperado 200. Se houver 503, envie o print do erro.");
+    client.assert(response.body.provider === "OLLAMA", "O perfil local deve responder com provider OLLAMA.");
+    client.assert(typeof response.body.answer === "string" && response.body.answer.trim().length > 0, "A resposta deve ter um texto.");
+  });
+%}
+
+### PRINT 08 - Consultar o livro DEPOIS do reinicio - esperado: 200 com o mesmo id e titulo atualizado
+GET {{baseUrl}}/api/books/{{s1s_livro}}
+
+> {%
+  client.test("PRINT 08: livro persistiu depois do reinicio", function () {
+    client.assert(response.status === 200, "Esperado 200.");
+    client.assert(response.body.id === client.global.get("s1s_livro"), "O id deve ser o mesmo da criacao.");
+    client.assert(response.body.title === "Livro da Sprint 1 - ATUALIZADO", "O titulo atualizado deve continuar salvo.");
+  });
+%}
+
+### PRINT 09 - Consultar o leitor DEPOIS do reinicio - esperado: 200 com o mesmo id e e-mail
+GET {{baseUrl}}/api/readers/{{s1s_leitor}}
+
+> {%
+  client.test("PRINT 09: leitor persistiu depois do reinicio", function () {
+    client.assert(response.status === 200, "Esperado 200.");
+    client.assert(response.body.id === client.global.get("s1s_leitor"), "O id deve ser o mesmo da criacao.");
+    client.assert(response.body.email === client.global.get("s1s_email"), "O e-mail deve continuar salvo.");
+  });
+%}
+
+### PRINT 10 - Tentar repetir a compra - esperado: 409, pois o vinculo continua salvo
+# Aqui 409 e o resultado esperado. A compra registrada na PRINT 06 ja existe.
+POST {{baseUrl}}/api/purchases
+Content-Type: application/json
+
+{
+  "readerId": "{{s1s_leitor}}",
+  "bookId": "{{s1s_livro}}"
+}
+
+> {%
+  client.test("PRINT 10: vinculo de compra preservado", function () {
+    client.assert(response.status === 409, "Esperado 409: a compra nao deve ser cadastrada duas vezes.");
+    client.assert(response.body.detail === "Vinculo de compra ja existe.", "Confira a mensagem de compra duplicada.");
+  });
+%}
+
+### PRINT 11 - Desativar o livro de teste - esperado: 204, sem corpo de resposta
+# Somente o livro criado na PRINT 02 sera desativado.
+DELETE {{baseUrl}}/api/books/{{s1s_livro}}
+
+> {%
+  client.test("PRINT 11: livro desativado", function () {
+    client.assert(response.status === 204, "Esperado 204. O corpo vazio e normal.");
+  });
+%}
+
+### PRINT 12 - Conferir a exclusao logica - esperado: 200 com active false
+GET {{baseUrl}}/api/books/{{s1s_livro}}
+
+> {%
+  client.test("PRINT 12: livro ficou inativo", function () {
+    client.assert(response.status === 200, "Esperado 200: o documento nao foi apagado fisicamente.");
+    client.assert(response.body.active === false, "O campo active deve estar false.");
+  });
+%}
+

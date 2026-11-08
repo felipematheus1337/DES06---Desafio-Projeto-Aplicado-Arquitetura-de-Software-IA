@@ -1,0 +1,84 @@
+
+
+@baseUrl = http://localhost:8080
+@livroId = c5b48d6e-c0b7-4014-915f-a6908cf15893
+@leitorId = f3ad06f3-1937-4bdb-8eca-2317a0fc61ae
+
+### PRINT 07: Estudo DEPOIS da compra. Esperado: 200, answer e provider OLLAMA
+POST {{baseUrl}}/api/study
+Content-Type: application/json
+
+{
+  "readerId": "{{leitorId}}",
+  "bookId": "{{livroId}}",
+  "task": "EXPLAIN",
+  "question": "Explique em linguagem simples.",
+  "excerpt": "Uma afirmacao precisa de razoes que a sustentem."
+}
+
+> {%
+  client.test("Estudo autorizado apos a compra", function () {
+    client.assert(response.status === 200, "Esperado 200. Se der erro, envie o print para corrigirmos.");
+    client.assert(response.body.provider === "OLLAMA", "No perfil local, esperado provider OLLAMA.");
+    client.assert(typeof response.body.answer === "string" && response.body.answer.trim().length > 0, "Esperado texto em answer.");
+  });
+%}
+
+
+### PRINT 08: Livro salvo APOS reiniciar. Esperado: 200 e titulo atualizado
+GET {{baseUrl}}/api/books/{{livroId}}
+
+> {%
+  client.test("Livro preservado apos o reinicio", function () {
+    client.assert(response.status === 200, "Esperado 200.");
+    client.assert(response.body.id === "c5b48d6e-c0b7-4014-915f-a6908cf15893", "Esperado o mesmo livro do print 02.");
+    client.assert(response.body.title === "Livro da Sprint 1 - ATUALIZADO", "O titulo atualizado no print 03 deve permanecer salvo.");
+  });
+%}
+
+### PRINT 09: Leitor salvo APOS reiniciar. Esperado: 200 e mesmo leitor
+GET {{baseUrl}}/api/readers/{{leitorId}}
+
+> {%
+  client.test("Leitor preservado apos o reinicio", function () {
+    client.assert(response.status === 200, "Esperado 200.");
+    client.assert(response.body.id === "f3ad06f3-1937-4bdb-8eca-2317a0fc61ae", "Esperado o mesmo leitor do print 04.");
+    client.assert(response.body.email === "sprint1.1794100292807@example.com", "Esperado o mesmo e-mail do print 04.");
+  });
+%}
+
+### PRINT 10: Compra duplicada APOS reiniciar. Esperado: 409
+POST {{baseUrl}}/api/purchases
+Content-Type: application/json
+
+{
+  "readerId": "{{leitorId}}",
+  "bookId": "{{livroId}}"
+}
+
+> {%
+  client.test("Compra preservada e duplicidade bloqueada", function () {
+    client.assert(response.status === 409, "Esperado 409, pois a compra ja existe.");
+    client.assert(response.body.detail === "Vinculo de compra ja existe.", "Confira a mensagem de duplicidade.");
+  });
+%}
+
+### PRINT 11: Desativar SOMENTE o livro de teste. Esperado: 204 sem corpo
+DELETE {{baseUrl}}/api/books/{{livroId}}
+
+> {%
+  client.test("Livro de teste desativado", function () {
+    client.assert(response.status === 204, "Esperado 204. Resposta vazia e normal.");
+  });
+%}
+
+### PRINT 12: Confirmar exclusao LOGICA. Esperado: 200 e active false
+GET {{baseUrl}}/api/books/{{livroId}}
+
+> {%
+  client.test("Livro permanece consultavel e inativo", function () {
+    client.assert(response.status === 200, "Esperado 200: a exclusao e logica.");
+    client.assert(response.body.active === false, "Esperado active false.");
+  });
+%}
+
